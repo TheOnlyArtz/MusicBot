@@ -26,6 +26,7 @@
   "homepage": "https://github.com/TheOnlyArtz/MusicBot#readme",
   "dependencies": {
     "discord.js": "^11.1.0",
+    "moment": "^2.18.1",
     "snekfetch": "^3.2.4",
     "winston": "^2.3.1",
     "ytdl-core": "^0.14.4"
