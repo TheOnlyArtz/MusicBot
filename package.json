@@ -1,0 +1,32 @@
+{
+  "name": "musicbot",
+  "version": "0.0.1",
+  "description": "A free to use MusicBot",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheOnlyArtz/MusicBot.git"
+  },
+  "keywords": [
+    "music",
+    "bot",
+    "discord",
+    "musicbot",
+    "javascript",
+    "js"
+  ],
+  "author": "TheOnlyArtz / AmitKatz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheOnlyArtz/MusicBot/issues"
+  },
+  "homepage": "https://github.com/TheOnlyArtz/MusicBot#readme",
+  "dependencies": {
+    "discord.js": "^11.1.0",
+    "snekfetch": "^3.2.4",
+    "ytdl-core": "^0.14.4"
+  }
+}
