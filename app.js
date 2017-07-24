@@ -12,4 +12,13 @@ client.on('ready', () => {
   logger.verbose(`With the ID of ${client.user.id}`)
 })
 
+let prefix = '!'
+client.on('message', async (message) => {
+  if (message.content.startsWith(`${prefix}ping`)) {
+    message.channel.send('Pinging...').then(r => {
+      r.edit(`Ping! ${r.createdTimestamp - message.createdTimestamp}`)
+    })
+  }
+})
+
 client.login(config.token)
