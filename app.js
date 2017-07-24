@@ -3,6 +3,7 @@ const config = require('./config/config.json');
 const client = new Discord.Client()
 const winstonLogger = require('./classes/logger.js')
 const fs = require('fs')
+const chalk = require('chalk')
 
 const winstonClass = new winstonLogger
 global.logger = winstonClass.logger

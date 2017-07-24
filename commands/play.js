@@ -2,7 +2,7 @@ const fetch = require('snekfetch');
 const ytdl = require('ytdl-core');
 
 exports.run = async (client, msg) => {
-  msg.channel.send('s')
+  const toPlay = message.content.split(' ').slice(1).join(' ')
 };
 
 module.exports.help = {
