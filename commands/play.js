@@ -1,7 +1,7 @@
 const fetch = require('snekfetch');
 const ytdl = require('ytdl-core');
 
-module.exports = async (client, msg) => {
+exports.run = async (client, msg) => {
   msg.channel.send('s')
 };
 

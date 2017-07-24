@@ -19,22 +19,23 @@ process.on('unhaldedRejection', (reason, p) => {
   logger.error(reason)
 });
 
-fs.readdir('./commands/', async (err, files) => {
-  if (err) logger.error(err)
-  let javascriptFiles = files.filter(r => r.split('.').pop() === 'js')
-  if (javascriptFiles <= 0) {
-    logger.info('No commands to load');
+fs.readdir("./commands/", (err, files) => {
+  if (err) logger.error(err);
+  let jsfiles = files.filter(f => f.split(".").pop() === "js");
+  if (jsfiles.length <= 0) {
+    logger.info("No commands to load!");
     return;
-  } else {
-    logger.info(`Loading ${javascriptFiles.length} command`)
   }
-  let IndexNum = 0
-  javascriptFiles.forEach(async (file, index) => {
-    let props = require(`./commands/${file}`);
-    logger.info(`${index + 1}: ${file} loaded`);
+  logger.info(`Loading ${jsfiles.length} commands!`);
+
+
+  //Loop through all the files and load them
+  jsfiles.forEach((f, i) => {
+    let props = require(`./commands/${f}`);
+    logger.info(`${i + 1}: ${f} loaded`);
     client.commands.set(props.help.name, props)
   });
-})
+});
 
 
 
@@ -48,9 +49,9 @@ client.on('message', async (message) => {
     })
   }
   let args = message.content.split(" ").slice(1);
-let command = message.content.split(" ")[0];
-if (!command.startsWith(prefix)) return;
-let cmd = client.commands.get(command.slice(prefix.length));
+  let command = message.content.split(" ")[0];
+  if (!command.startsWith(prefix)) return;
+  let cmd = client.commands.get(command.slice(prefix.length));
 //runs the command handler
   if (cmd)
     try {
