@@ -27,7 +27,9 @@
   "dependencies": {
     "chalk": "^2.0.1",
     "discord.js": "^11.1.0",
+    "ffmpeg-binaries": "^3.2.2-3",
     "moment": "^2.18.1",
+    "node-opus": "^0.2.6",
     "snekfetch": "^3.2.4",
     "winston": "^2.3.1",
     "ytdl-core": "^0.14.4"

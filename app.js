@@ -42,7 +42,7 @@ fs.readdir("./commands/", (err, files) => {
 
 
 
-let prefix = '!'
+let prefix = '.'
 client.on('message', async (message) => {
   if (message.content.startsWith(`${prefix}ping`)) {
     message.channel.send('Pinging...').then(r => {
