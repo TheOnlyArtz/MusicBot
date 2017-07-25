@@ -76,8 +76,12 @@ function play(connection, message) {
   // queue.delete(`/${message.guild.id}/queue[0]`)
 
   json.dispatcher.on('end', function () {
-    if (json.length > 0) play(connection, message)
-    else connection.disconnect()
+    if (json.length > 0) {
+    play(connection, message)
+    } else {
+      connection.disconnect()
+      queue.delete(`/${message.guild.id}`)
+    }
   })
 }
 module.exports.help = {
