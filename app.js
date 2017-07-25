@@ -4,6 +4,8 @@ const client = new Discord.Client()
 const winstonLogger = require('./classes/logger.js')
 const fs = require('fs')
 const chalk = require('chalk')
+const db = require('node-json-db')
+const queue = new db("./commands/songs.json", true, true)
 
 const winstonClass = new winstonLogger
 global.logger = winstonClass.logger
@@ -14,6 +16,7 @@ client.on('ready', () => {
   logger.info(`MusicBot is ready!`);
   logger.verbose(`Connected as ${client.user.tag}`)
   logger.verbose(`With the ID of ${client.user.id}`)
+  queue.delete('/parent')
 })
 
 process.on('unhaldedRejection', (reason, p) => {

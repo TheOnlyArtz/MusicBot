@@ -10,7 +10,6 @@ const queue = new db("./commands/songs.json", true, true)
 
 exports.run = async (client, message) => {
   let action = message.content.split(' ')[1]
-  console.log(action);
   // guilds = {};
   message.delete()
   if (action === 'play') {
@@ -41,16 +40,17 @@ exports.run = async (client, message) => {
      try {
        queue.getData(`/${message.guild.id}`)
      } catch (e) {
-       queue.push(`/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
+       queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
 
      }
 
-     queue.push(`/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
+     queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
 
 
     if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
       play(connection, message);
       });
+      console.log(queue.dispatcher, queue.getData(`/parent/${message.guild.id}`).dispatcher);
 
     })
     .catch(e => {
@@ -58,7 +58,15 @@ exports.run = async (client, message) => {
       logger.error(e)
     })
   } else if (action === 'skip') {
-    
+    let s = queue.getData(`/parent/${message.guild.id}`)
+    let json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs`);
+    if (json.dispatcher) {
+      console.log('There is');
+      queue.dispatcher.end()
+        // queue.delete((`/${message.guild.id}/TheSongs/mySongs/queue[0]`));
+    } else {
+      console.log(client.voiceConnections);
+    }
   }
 
 }
@@ -70,12 +78,12 @@ exports.run = async (client, message) => {
     // } catch (e) {
     //   logger.error(e)
     // }
-    let json = queue.getData(`/${message.guild.id}/TheSongs/mySongs/queue`);
+    let json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue`);
     json.dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
 
     setTimeout(() => {
-      queue.delete((`/${message.guild.id}/TheSongs/mySongs/queue[0]`));
+      queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
     }, 3000)
 
     // queue.delete(`/${message.guild.id}/queue[0]`)
@@ -85,7 +93,7 @@ exports.run = async (client, message) => {
       play(connection, message)
       } else {
         connection.disconnect()
-        queue.delete(`/${message.guild.id}`)
+        queue.delete(`/parent/${message.guild.id}`)
       }
     })
   }
