@@ -57,6 +57,13 @@ exports.run = async (client, message) => {
       logger.error(e)
     })
   }
+  if (action === 'skip') {
+    message.member.voiceChannel.join().then(async (connection) => {
+     connection.dispatcher.end()
+     logger.info(`${message.author.id} skipped successfully`)
+     })
+     .catch(e => logger.error(`${message.author.id} failed horribly at skipping a song.`))
+  }
 
 }
 
@@ -78,11 +85,11 @@ exports.run = async (client, message) => {
     // queue.delete(`/${message.guild.id}/queue[0]`)
 
     json.dispatcher.on('end', function () {
-      if (json.length > 0) {
+      if (json) {
       play(connection, message)
       } else {
         connection.disconnect()
-        queue.delete(`/parent/${message.guild.id}`)
+        queue.delete(`/parent/`)
       }
     })
   }
