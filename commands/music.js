@@ -40,11 +40,11 @@ exports.run = async (client, message) => {
    try {
      queue.getData(`/${message.guild.id}`)
    } catch (e) {
-     queue.push("/TheSongs/mySongs", {queue: []}, false);
+     queue.push(`/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
 
    }
 
-   queue.push("/TheSongs/mySongs", {queue: [r.body.items[0].id.videoId]}, false);
+   queue.push(`/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
 
 
   if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
@@ -65,12 +65,12 @@ function play(connection, message) {
   // } catch (e) {
   //   logger.error(e)
   // }
-  let json = queue.getData(`/TheSongs/mySongs/queue`);
+  let json = queue.getData(`/${message.guild.id}/TheSongs/mySongs/queue`);
   json.dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
 
   setTimeout(() => {
-    queue.delete(("/TheSongs/mySongs/queue[0]"));
+    queue.delete((`/${message.guild.id}/TheSongs/mySongs/queue[0]`));
   }, 3000)
 
   // queue.delete(`/${message.guild.id}/queue[0]`)
