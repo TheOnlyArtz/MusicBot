@@ -5,3 +5,6 @@ node_modules/
 config/
 
 songs/
+
+#queue
+commands/songs.json

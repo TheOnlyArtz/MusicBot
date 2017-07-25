@@ -6,10 +6,9 @@ const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js')
 const moment = require('moment')
 const db = require('node-json-db')
-const queue = new db("./queue.json", true, true)
+const queue = new db("./commands/songs.json", true, true)
 
 exports.run = async (client, message) => {
-  queue.push(`/${message.guild.id}`, {queue:['sss']});
   console.log(queue[message.guild.id]);
   // guilds = {};
   message.delete()
@@ -38,9 +37,14 @@ exports.run = async (client, message) => {
      });
    }
 
+   try {
+     queue.getData(`/${message.guild.id}`)
+   } catch (e) {
+     queue.push("/TheSongs/mySongs", {queue: []}, false);
 
-  let queue = guilds[message.guild.id].queue
-  queue.push(r.body.items[0].id.videoId)
+   }
+
+   queue.push("/TheSongs/mySongs", {queue: [r.body.items[0].id.videoId]}, false);
 
 
   if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
@@ -55,18 +59,24 @@ exports.run = async (client, message) => {
 }
 
 function play(connection, message) {
-  let guilds = JSON.parse(fs.readFileSync("./queue.json", "utf8"));
-  guilds[message.guild.id].dispatcher = connection.playStream(ytdl(guilds[message.guild.id].queue[0], {filter: 'audioonly'}));
+  let songsQueue = [];
+  // try {
+  //   queue.getData(`/${message.guild.id}`)
+  // } catch (e) {
+  //   logger.error(e)
+  // }
+  let json = queue.getData(`/TheSongs/mySongs/queue`);
+  json.dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
-  let json = guilds[message.guild.id]
 
-  let pp = JSON.stringify(json).shift()
+  setTimeout(() => {
+    queue.delete(("/TheSongs/mySongs/queue[0]"));
+  }, 3000)
 
-  let final = JSON.parse(pp)
+  // queue.delete(`/${message.guild.id}/queue[0]`)
 
-  console.log(final);
-  guilds[message.guild.id].dispatcher.on('end', function () {
-    if (guilds[message.guild.id].queue) play(connection, message)
+  json.dispatcher.on('end', function () {
+    if (json.queue) play(connection, message)
     else connection.disconnect()
   })
 }
