@@ -9,20 +9,18 @@ const db = require('node-json-db')
 const queue = new db("./commands/songs.json", true, true)
 
 exports.run = async (client, message) => {
-  let action = message.content.split(' ')[0]
-  console.log(queue[message.guild.id]);
+  let action = message.content.split(' ')[1]
+  console.log(action);
   // guilds = {};
   message.delete()
   if (action === 'play') {
-    const toPlay = message.content.split(' ').slice(1).join(' ');
+    const toPlay = message.content.split(' ').slice(2).join(' ');
     if (!toPlay) return message.reply('Please add a link of the song to the command')
 
-    const ytdl = require('ytdl-core');
 
     if(!message.member.voiceChannel) {
       return message.channel.send('Please get into a voice channel')
     }
-
 
     fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + "&key=" + config.ytKey)
    .then(async (r) => {
@@ -59,7 +57,11 @@ exports.run = async (client, message) => {
       message.reply('We could\' find the requested song :pensive:')
       logger.error(e)
     })
+  } else if (action === 'skip') {
+    
   }
+
+}
 
   function play(connection, message) {
     let songsQueue = [];
@@ -87,7 +89,7 @@ exports.run = async (client, message) => {
       }
     })
   }
-}
+
 module.exports.help = {
   name : 'music'
 }
