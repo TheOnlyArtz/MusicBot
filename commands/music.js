@@ -38,7 +38,7 @@ exports.run = async (client, message) => {
      }
 
      try {
-       queue.getData(`/${message.guild.id}`)
+       queue.getData(`/parent/${message.guild.id}`)
      } catch (e) {
        queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
 
@@ -50,23 +50,12 @@ exports.run = async (client, message) => {
     if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
       play(connection, message);
       });
-      console.log(queue.dispatcher, queue.getData(`/parent/${message.guild.id}`).dispatcher);
 
     })
     .catch(e => {
       message.reply('We could\' find the requested song :pensive:')
       logger.error(e)
     })
-  } else if (action === 'skip') {
-    let s = queue.getData(`/parent/${message.guild.id}`)
-    let json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs`);
-    if (json.dispatcher) {
-      console.log('There is');
-      queue.dispatcher.end()
-        // queue.delete((`/${message.guild.id}/TheSongs/mySongs/queue[0]`));
-    } else {
-      console.log(client.voiceConnections);
-    }
   }
 
 }
