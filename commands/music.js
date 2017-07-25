@@ -5,9 +5,13 @@ const config = require('../config/config.json');
 const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js')
 const moment = require('moment')
+const db = require('node-json-db')
+const queue = new db("./queue.json", true, true)
 
 exports.run = async (client, message) => {
-  guilds = {};
+  queue.push(`/${message.guild.id}`, {queue:['sss']});
+  console.log(queue[message.guild.id]);
+  // guilds = {};
   message.delete()
   const toPlay = message.content.split(' ').slice(1).join(' ');
   if (!toPlay) return message.reply('Please add a link of the song to the command')
@@ -33,16 +37,16 @@ exports.run = async (client, message) => {
        message.channel.send({embed})
      });
    }
-  if(!guilds[message.guild.id]) guilds[message.guild.id] = {
-    queue : []
-  }
-  var server = guilds[message.guild.id]
-  server.queue.push(r.body.items[0].id.videoId)
-  console.log(server);
+
+
+  let queue = guilds[message.guild.id].queue
+  queue.push(r.body.items[0].id.videoId)
+
 
   if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
-    play(connection, message)
+    play(connection, message);
     });
+
   })
   .catch(e => {
     message.reply('We could\' find the requested song :pensive:')
@@ -51,13 +55,18 @@ exports.run = async (client, message) => {
 }
 
 function play(connection, message) {
-  var server = guilds[message.guild.id];
-  server.dispatcher = connection.playStream(ytdl(server.queue[0], {filter: 'audioonly'}))
-  console.log(server.queue.length);
-  server.queue.shift();
+  let guilds = JSON.parse(fs.readFileSync("./queue.json", "utf8"));
+  guilds[message.guild.id].dispatcher = connection.playStream(ytdl(guilds[message.guild.id].queue[0], {filter: 'audioonly'}));
 
-  server.dispatcher.on('end', function () {
-    if (server.queue) play(connection, message)
+  let json = guilds[message.guild.id]
+
+  let pp = JSON.stringify(json).shift()
+
+  let final = JSON.parse(pp)
+
+  console.log(final);
+  guilds[message.guild.id].dispatcher.on('end', function () {
+    if (guilds[message.guild.id].queue) play(connection, message)
     else connection.disconnect()
   })
 }

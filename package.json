@@ -30,6 +30,7 @@
     "ffmpeg-binaries": "^3.2.2-3",
     "get-youtube-id": "^1.0.0",
     "moment": "^2.18.1",
+    "node-json-db": "^0.7.3",
     "node-opus": "^0.2.6",
     "snekfetch": "^3.2.4",
     "winston": "^2.3.1",
