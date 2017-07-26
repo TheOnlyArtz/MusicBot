@@ -52,8 +52,8 @@ exports.run = async (client, message) => {
 
 
       if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
-        play(connection, message);
         logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`)
+        play(connection, message);
         });
 
       })
@@ -68,7 +68,7 @@ exports.run = async (client, message) => {
     }
   }
   if (action === 'skip') {
-    let skipReq = 0;
+    let skipReq = 0
     if (skipper.indexOf(message.author.id) === -1) {
       skipper.push(message.author.id);
       skipReq++;
