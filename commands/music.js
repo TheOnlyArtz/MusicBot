@@ -7,6 +7,8 @@ const Discord = require('discord.js')
 const moment = require('moment')
 const db = require('node-json-db')
 const queue = new db("./commands/songs.json", true, true)
+const titleForFinal = [];
+const chalk = require('chalk')
 
 exports.run = async (client, message) => {
   let action = message.content.split(' ')[1]
@@ -25,6 +27,7 @@ exports.run = async (client, message) => {
    .then(async (r) => {
      if (r.body.items[0]) {
        fetchVideoInfo(`${r.body.items[0].id.videoId}`).then( function (l) {
+         titleForFinal.push(l.title)
          const embed = new Discord.RichEmbed()
          .setAuthor(`Requested by ${message.author.username} and added to the queue`, l.thumbnailUrl)
          .addField(`Song Info`, `**Owner:** ${l.owner}\n\
@@ -49,6 +52,7 @@ exports.run = async (client, message) => {
 
     if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
       play(connection, message);
+      logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`)
       });
 
     })
@@ -60,7 +64,7 @@ exports.run = async (client, message) => {
   if (action === 'skip') {
     message.member.voiceChannel.join().then(async (connection) => {
      connection.dispatcher.end()
-     logger.info(`${message.author.id} skipped successfully`)
+     logger.info(`${message.author.username} skipped successfully`)
      })
      .catch(e => logger.error(`${message.author.id} failed horribly at skipping a song.`))
   }
