@@ -69,29 +69,19 @@ exports.run = async (client, message) => {
     }
   }
   if (action === 'skip') {
-    // if (skipper.indexOf(message.author.id) === -1) {
-      // skipper.push(message.author.id);
-      // skipReq++;
-      // if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-        // message.member.voiceChannel.join().then(async (connection) => {
-        //  connection.dispatcher.end()
-        //  logger.info(`${message.author.username} skipped successfully`)
-        //  message.reply('Skipping successfully')
-        //  })
-        //  .catch(e => {
-        //    message.channel.send(`${message.author.username} failed horribly at skipping a song.`)
-        //    logger.error(e)
-        //  })
-
-        await skip_song()
-          // let list = queue.getData(`/parent/315129822571528193/TheSongs/mySongs`);
-          // if (list.queue) {
-          //   play(list.queue[0])
-          // } else {
-          //   skipper = [];
-          //   skipReq = 0;
-          // }
-        }
+    if (skipper.indexOf(message.author.id) === -1) {
+      skipper.push(message.author.id);
+      skipReq++;
+      if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
+        await skip_song(message)
+        skipReq = 0;
+        skipper = [];
+        message.reply('Skipping successfully')
+      } else {
+        message.reply('Your skip counted and you need more ' + Math.ceil(((message.member.voiceChannel.members.size - 1) / 2) - skipReq) + ' Guy(s) to skip the current song')
+      }
+      }
+    }
 }
 
   function play(connection, message) {
@@ -120,12 +110,21 @@ exports.run = async (client, message) => {
     fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
 
     .then(res => {
-      console.log(res.body.items.snippet);
+      try {
+        queue.getData(`/parent/${message.guild.id}`)
+      } catch (e) {
+        queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
+
+      }
       res.body.items.forEach(i => {
         if (i.id) {
           queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [i.snippet.resourceId.videoId]}, false);
         }
       })
+      if (!message.guild.voiceConnection) message.member.voiceChannel.join().then(async (connection) => {
+        logger.info(`Started by streaming a playlist requested by ${message.author.username}`)
+        play(connection, message);
+        });
     })
     .catch(e => {
       logger.error(e)
