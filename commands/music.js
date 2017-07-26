@@ -10,6 +10,7 @@ const queue = new db("./commands/songs.json", true, true)
 const titleForFinal = [];
 const chalk = require('chalk')
 const skipper = [];
+let skipReq = 0
 
 exports.run = async (client, message) => {
   let action = message.content.split(' ')[1]
@@ -68,49 +69,44 @@ exports.run = async (client, message) => {
     }
   }
   if (action === 'skip') {
-    let skipReq = 0
-    if (skipper.indexOf(message.author.id) === -1) {
-      skipper.push(message.author.id);
-      skipReq++;
-      if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-        message.member.voiceChannel.join().then(async (connection) => {
-         connection.dispatcher.end()
-         logger.info(`${message.author.username} skipped successfully`)
-         message.reply('Skipping successfully')
-         })
-         .catch(e => {
-           message.channel.send(`${message.author.username} failed horribly at skipping a song.`)
-           logger.error(e)
-         })
-      } else {
-        message.channel.send(`Your skip got into the \`skippers list\` but you need more` + Math.ceil((message.member.voiceChannel.members.size - 1) / 2 - skipReq) + `guy(s)`)
-      }
-    }
+    // if (skipper.indexOf(message.author.id) === -1) {
+      // skipper.push(message.author.id);
+      // skipReq++;
+      // if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
+        // message.member.voiceChannel.join().then(async (connection) => {
+        //  connection.dispatcher.end()
+        //  logger.info(`${message.author.username} skipped successfully`)
+        //  message.reply('Skipping successfully')
+        //  })
+        //  .catch(e => {
+        //    message.channel.send(`${message.author.username} failed horribly at skipping a song.`)
+        //    logger.error(e)
+        //  })
 
-  }
-
+        await skip_song()
+          // let list = queue.getData(`/parent/315129822571528193/TheSongs/mySongs`);
+          // if (list.queue) {
+          //   play(list.queue[0])
+          // } else {
+          //   skipper = [];
+          //   skipReq = 0;
+          // }
+        }
 }
 
   function play(connection, message) {
     let songsQueue = [];
-    // try {
-    //   queue.getData(`/${message.guild.id}`)
-    // } catch (e) {
-    //   logger.error(e)
-    // }
     let json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue`);
-    json.dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
+    dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
 
     setTimeout(() => {
       queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
     }, 3000)
 
-    // queue.delete(`/${message.guild.id}/queue[0]`)
 
     let list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
-    console.log(json.dispatcher);
-    json.dispatcher.on('end', function () {
+    dispatcher.on('end', function () {
       if (list) {
       play(connection, message)
       } else {
@@ -137,6 +133,10 @@ exports.run = async (client, message) => {
     })
   }
 
+  function skip_song(message) {
+    console.log(dispatcher.end());
+    message.channel.send('Skipping the current song')
+}
 module.exports.help = {
   name : 'music'
 }
