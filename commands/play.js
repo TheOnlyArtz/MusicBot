@@ -6,7 +6,7 @@ const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js');
 const moment = require('moment');
 const db = require('node-json-db');
-const queue = new db('./commands/songs.json', true, true);
+const queue = new db('./queue/songs.json', true, true);
 const titleForFinal = [];
 const chalk = require('chalk');
 

@@ -5,7 +5,7 @@ const winstonLogger = require('./classes/logger.js');
 const fs = require('fs');
 const chalk = require('chalk');
 const db = require('node-json-db');
-const queue = new db('./commands/songs.json', true, true);
+const queue = new db('./queue/songs.json', true, true);
 const songAmount = [];
 //logger -------- //
 const winstonClass = new winstonLogger();
@@ -44,7 +44,7 @@ fs.readdir('./commands/', (err, files) => {
 	});
 });
 
-const prefix = '.';
+const prefix = config.prefix;
 client.on('message', async message => {
 	if (message.content.startsWith(`${prefix}ping`)) {
 		message.channel.send('Pinging...').then(r => {
