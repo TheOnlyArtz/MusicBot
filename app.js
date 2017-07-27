@@ -1,17 +1,15 @@
 const Discord = require('discord.js');
 const config = require('./config/config.json');
-
 const client = new Discord.Client();
 const winstonLogger = require('./classes/logger.js');
 const fs = require('fs');
 const chalk = require('chalk');
 const db = require('node-json-db');
-
 const queue = new db('./commands/songs.json', true, true);
 const songAmount = [];
+//logger -------- //
 const winstonClass = new winstonLogger();
 global.logger = winstonClass.logger;
-
 client.commands = new Discord.Collection();
 
 client.on('ready', async () => {

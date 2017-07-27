@@ -17,6 +17,7 @@ exports.run = async (client, message) => {
 	const action = message.content.split(' ')[1];
   // Guilds = {};
 	message.delete();
+	//=========================Play Command==============================
 	if (action === 'play') {
 		const toPlay = message.content.split(' ').slice(2).join(' ');
 		if (!toPlay) {
@@ -65,11 +66,13 @@ exports.run = async (client, message) => {
 	logger.error(e);
 });
 		} else {
+	//=========================Plays Playlists==============================
 			console.log('got playlist before download');
 			await playLists(message, toPlay);
 			console.log('got playlist after download');
 		}
 	}
+	//=========================Skip Command==============================
 	if (action === 'skip') {
     if (skipper.indexOf(message.author.id) === -1) {
       skipper.push(message.author.id);
@@ -87,6 +90,10 @@ you need` + Math.ceil(((message.member.voiceChannel.members.size - 1) / 2) - ski
 	}
 };
 }
+
+
+
+//=========================Play Function==============================
 
 function play(connection, message) {
 	const songsQueue = [];
@@ -117,6 +124,8 @@ function play(connection, message) {
 	});
 }
 
+//=========================Get Playlist Function==============================
+
 function playLists(message, id) {
 	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
     .then(res => {
@@ -145,6 +154,8 @@ function playLists(message, id) {
 	logger.error(id.split('&list=')[1]);
 });
 }
+
+//=========================Song Skiiping Function==============================
 
 function skip_song() {
 	dispatcher.end()
