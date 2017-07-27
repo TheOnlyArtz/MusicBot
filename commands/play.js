@@ -44,16 +44,21 @@ exports.run = async (client, message) => {
 	}
 
 	try {
-		queue.getData(`/parent/${message.guild.id}`);
+		queue.getData(`/parent/${message.guild.id}`)
 	} catch (e) {
-		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
+		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false)
 	}
 
-	queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
+	try {
+		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false)
+	} catch (e) {
+		logger.error(e)
+	}
+
 
 	if (!message.guild.voiceConnection) {
 		message.member.voiceChannel.join().then(async connection => {
-			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
+			logger.info(`Started to stream ${chalk.magenta(r.body.items[0].title)} for ${message.author.username}`);
 			play(connection, message);
 		});
 	}
@@ -64,9 +69,8 @@ exports.run = async (client, message) => {
 });
 		} else {
 	//=========================Plays Playlists==============================
-			console.log('got playlist before download');
 			await playLists(message, toPlay);
-			console.log('got playlist after download');
+			logger.info(`Streaming a playlist for ${message.author.username}`)
 		}
 }
 
@@ -87,7 +91,9 @@ function play(connection, message) {
 		});
 	}
 	fetchVideoInfo(`${list}`).then(l => {
-	message.channel.send(`Started to stream **\`${l.title}\`**`)
+	message.channel.send(`Started to stream **\`${l.title}\`** Requested by ${message.author.username}`);
+	logger.info(`Downloading the song ==> ${l.title} for ${message.author.username}`);
+	logger.info(`Downloaded ${l.title} successfully Enjoy!`)
 	});
 	setTimeout(() => {
 		queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
@@ -123,7 +129,6 @@ function playLists(message, id) {
 	});
 	if (!message.guild.voiceConnection) {
 		message.member.voiceChannel.join().then(async connection => {
-			logger.info(`Started to stream by playing playlist requested by ${message.author.username}`);
 			play(connection, message);
 		});
 	}
