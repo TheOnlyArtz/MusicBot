@@ -6,14 +6,12 @@ const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js');
 const moment = require('moment');
 const db = require('node-json-db');
-
-const Table = require(`cli-table`);
 const queue = new db('./commands/songs.json', true, true);
 const titleForFinal = [];
 const chalk = require('chalk');
 
-const skipper = [];
-const skipReq = 0;
+let skipper = [];
+let skipReq = 0;
 
 exports.run = async (client, message) => {
 	const action = message.content.split(' ')[1];
@@ -73,48 +71,40 @@ exports.run = async (client, message) => {
 		}
 	}
 	if (action === 'skip') {
-    // If (skipper.indexOf(message.author.id) === -1) {
-      // skipper.push(message.author.id);
-      // skipReq++;
-      // if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-        // message.member.voiceChannel.join().then(async (connection) => {
-        //  connection.dispatcher.end()
-        //  logger.info(`${message.author.username} skipped successfully`)
-        //  message.reply('Skipping successfully')
-        //  })
-        //  .catch(e => {
-        //    message.channel.send(`${message.author.username} failed horribly at skipping a song.`)
-        //    logger.error(e)
-        //  })
-
-		await skip_song();
-          // Let list = queue.getData(`/parent/315129822571528193/TheSongs/mySongs`);
-          // if (list.queue) {
-          //   play(list.queue[0])
-          // } else {
-          //   skipper = [];
-          //   skipReq = 0;
-          // }
+    if (skipper.indexOf(message.author.id) === -1) {
+      skipper.push(message.author.id);
+      skipReq++;
+      if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
+				await skip_song();
+				message.reply('Skipped on the song successfully!')
+				logger.info(`${message.author.username} Skipped successfully on the song`)
+			} else {
+				message.reply(`Hey ${message.author.username}, Your skip as been added to the list\n\
+you need` + Math.ceil(((message.member.voiceChannel.members.size - 1) / 2) - skipReq) + 'Guy(s) to skip the song')
+			}
 	}
 };
+}
 
 function play(connection, message) {
 	const songsQueue = [];
 	const json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue`);
 	dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
-	setTimeout(() => {
-		queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
-	}, 3000);
-
+	const list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
 	if (!message.guild.voiceConnection) {
 		message.member.voiceChannel.join().then(async connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
 	}
+	fetchVideoInfo(`${list}`).then(l => {
+	message.channel.send(`Started to stream **\`${l.title}\`**`)
+	});
+	setTimeout(() => {
+		queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
+	}, 3000);
 
-	const list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
 	dispatcher.on('end', () => {
 		if (list) {
 			play(connection, message);
@@ -128,10 +118,8 @@ function play(connection, message) {
 function playLists(message, id) {
 	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
     .then(res => {
-			console.log(res.body.items[0].snippet);
 	const playembed = new Discord.RichEmbed()
-			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL)
-			.addField(`Song List`, 'To be cont');
+			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL);
 	message.channel.send({embed: playembed});
 	try {
 		queue.getData(`/parent/${message.guild.id}`);
@@ -157,53 +145,9 @@ function playLists(message, id) {
 }
 
 function skip_song() {
-	console.log(dispatcher.end());
+	dispatcher.end();
 }
 
-function printSongs(res) {
-	let printys = [];
-	let links = [];
-	let names = [];
-	var table = new Table({
-    chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
-           , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
-           , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
-           , 'right': '║' , 'right-mid': '╢' , 'middle': '│' },
-
-		res.body.items.forEach(o => {
-			if (o.id) {
-				printys.push(i.snippet.resourceId.videoId)
-			}
-		})
-
-		for (var i = 0; i < printys.length; i++) {
-			fetchVideoInfo(printys[i]).then(l => {
-				links.push(l.url)
-				names.push(l.title)
-			})
-		}
-
-    head: [
-          `Song Name`,
-          `Song Link`
-       ], colWidths: [50, 50]
-  });
-
-	res.body.items.forEach(o => {
-
-	})
-  table.push(
-      ['foo', 'bar']
-    , ['frob', 'bar']
-  );
-
-	fetch.post(`https://hastebin.com/documents`)
-	.set(`Content-Type`, `application/raw`)
-	.send(table.toString())
-	.then(r =>
-	 message.channel.send(`http://hastebin.com/${r.body.key}`));
-  console.log(table.toString());
-}
 module.exports.help = {
 	name: 'music'
 };
