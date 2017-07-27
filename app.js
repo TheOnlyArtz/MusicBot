@@ -19,7 +19,7 @@ client.on('ready', async () => {
 	logger.verbose(`Connected as ${client.user.tag}`);
 	logger.verbose(`With the ID of ${client.user.id}`);
 	logger.info('======================================');
-  await getGuilds()
+	await getGuilds();
 	queue.delete('/parent');
 });
 
@@ -73,26 +73,26 @@ client.on('message', async message => {
 function getGuilds() {
 	const map = client.guilds.map(i => i.id);
 	const guildMaps = [];
-  let songMaps = [];
-  try {
-    map.forEach(index => {
-      let l = queue.getData(`/parent/${index}/TheSongs/mySongs/queue`)
-      if (l) {
-        songMaps.push(l.length);
-      }
-    })
-  } catch (e) {
+	const songMaps = [];
+	try {
+		map.forEach(index => {
+			const l = queue.getData(`/parent/${index}/TheSongs/mySongs/queue`);
+			if (l) {
+				songMaps.push(l.length);
+			}
+		});
+	} catch (e) {
 
-  }
-  try {
-    map.forEach(index => {
-      if (queue.getData(`/parent/${index}`)) {
-        guildMaps.push(index);
-      }
-      logger.verbose(`Deleting ${guildMaps.length} Guilds and ${songMaps} Songs from the queue`);
-    })
-  } catch (e) {
-  }
+	}
+	try {
+		map.forEach(index => {
+			if (queue.getData(`/parent/${index}`)) {
+				guildMaps.push(index);
+			}
+			logger.verbose(`Deleting ${guildMaps.length} Guilds and ${songMaps} Songs from the queue`);
+		});
+	} catch (e) {
+	}
 }
 
 client.login(config.token);

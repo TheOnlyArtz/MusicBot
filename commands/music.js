@@ -7,6 +7,7 @@ const Discord = require('discord.js');
 const moment = require('moment');
 const db = require('node-json-db');
 
+const Table = require(`cli-table`);
 const queue = new db('./commands/songs.json', true, true);
 const titleForFinal = [];
 const chalk = require('chalk');
@@ -32,6 +33,7 @@ exports.run = async (client, message) => {
      .then(async r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
+			console.log(l);
 			titleForFinal.push(l.title);
 			const embed = new Discord.RichEmbed()
            .setAuthor(`Requested by ${message.author.username} and added to the queue`, l.thumbnailUrl)
@@ -98,19 +100,12 @@ exports.run = async (client, message) => {
 
 function play(connection, message) {
 	const songsQueue = [];
-    // Try {
-    //   queue.getData(`/${message.guild.id}`)
-    // } catch (e) {
-    //   logger.error(e)
-    // }
 	const json = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue`);
 	dispatcher = connection.playStream(ytdl(json[0], {filter: 'audioonly'}));
 
 	setTimeout(() => {
 		queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
 	}, 3000);
-
-    // Queue.delete(`/${message.guild.id}/queue[0]`)
 
 	if (!message.guild.voiceConnection) {
 		message.member.voiceChannel.join().then(async connection => {
@@ -133,6 +128,11 @@ function play(connection, message) {
 function playLists(message, id) {
 	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
     .then(res => {
+			console.log(res.body.items[0].snippet);
+	const playembed = new Discord.RichEmbed()
+			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL)
+			.addField(`Song List`, 'To be cont');
+	message.channel.send({embed: playembed});
 	try {
 		queue.getData(`/parent/${message.guild.id}`);
 	} catch (e) {
@@ -158,6 +158,51 @@ function playLists(message, id) {
 
 function skip_song() {
 	console.log(dispatcher.end());
+}
+
+function printSongs(res) {
+	let printys = [];
+	let links = [];
+	let names = [];
+	var table = new Table({
+    chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
+           , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
+           , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
+           , 'right': '║' , 'right-mid': '╢' , 'middle': '│' },
+
+		res.body.items.forEach(o => {
+			if (o.id) {
+				printys.push(i.snippet.resourceId.videoId)
+			}
+		})
+
+		for (var i = 0; i < printys.length; i++) {
+			fetchVideoInfo(printys[i]).then(l => {
+				links.push(l.url)
+				names.push(l.title)
+			})
+		}
+
+    head: [
+          `Song Name`,
+          `Song Link`
+       ], colWidths: [50, 50]
+  });
+
+	res.body.items.forEach(o => {
+
+	})
+  table.push(
+      ['foo', 'bar']
+    , ['frob', 'bar']
+  );
+
+	fetch.post(`https://hastebin.com/documents`)
+	.set(`Content-Type`, `application/raw`)
+	.send(table.toString())
+	.then(r =>
+	 message.channel.send(`http://hastebin.com/${r.body.key}`));
+  console.log(table.toString());
 }
 module.exports.help = {
 	name: 'music'

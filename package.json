@@ -26,6 +26,7 @@
   "homepage": "https://github.com/TheOnlyArtz/MusicBot#readme",
   "dependencies": {
     "chalk": "^2.0.1",
+    "cli-table": "^0.3.1",
     "discord.js": "^11.1.0",
     "ffmpeg-binaries": "^3.2.2-3",
     "get-youtube-id": "^1.0.0",
