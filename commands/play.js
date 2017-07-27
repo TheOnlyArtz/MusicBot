@@ -6,27 +6,28 @@ const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js');
 const moment = require('moment');
 const db = require('node-json-db');
+
 const queue = new db('./queue/songs.json', true, true);
 const titleForFinal = [];
 const chalk = require('chalk');
 
-let skipper = [];
-let skipReq = 0;
+const skipper = [];
+const skipReq = 0;
 
 exports.run = async (client, message) => {
   // Guilds = {};
 	message.delete();
-	//=========================Play Command==============================
-		const toPlay = message.content.split(' ').slice(1).join(' ');
-		if (!toPlay) {
-			return message.reply('Please add a link of the song to the command');
-		}
+	// =========================Play Command==============================
+	const toPlay = message.content.split(' ').slice(1).join(' ');
+	if (!toPlay) {
+		return message.reply('Please add a link of the song to the command');
+	}
 
-		if (!message.member.voiceChannel) {
-			return message.channel.send('Please get into a voice channel');
-		}
-		if (!toPlay.includes('&list') && !toPlay.includes('index')) {
-			fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + config.ytKey)
+	if (!message.member.voiceChannel) {
+		return message.channel.send('Please get into a voice channel');
+	}
+	if (!toPlay.includes('&list') && !toPlay.includes('index')) {
+		fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + config.ytKey)
      .then(async r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
@@ -44,17 +45,16 @@ exports.run = async (client, message) => {
 	}
 
 	try {
-		queue.getData(`/parent/${message.guild.id}`)
+		queue.getData(`/parent/${message.guild.id}`);
 	} catch (e) {
-		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false)
+		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: []}, false);
 	}
 
 	try {
-		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false)
+		queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
 	} catch (e) {
-		logger.error(e)
+		logger.error(e);
 	}
-
 
 	if (!message.guild.voiceConnection) {
 		message.member.voiceChannel.join().then(async connection => {
@@ -67,16 +67,14 @@ exports.run = async (client, message) => {
 	message.reply('We could\' find the requested song :pensive:');
 	logger.error(e);
 });
-		} else {
-	//=========================Plays Playlists==============================
-			await playLists(message, toPlay);
-			logger.info(`Streaming a playlist for ${message.author.username}`)
-		}
-}
+	} else {
+	// =========================Plays Playlists==============================
+		await playLists(message, toPlay);
+		logger.info(`Streaming a playlist for ${message.author.username}`);
+	}
+};
 
-
-
-//=========================Play Function==============================
+// =========================Play Function==============================
 
 function play(connection, message) {
 	const songsQueue = [];
@@ -91,9 +89,9 @@ function play(connection, message) {
 		});
 	}
 	fetchVideoInfo(`${list}`).then(l => {
-	message.channel.send(`Started to stream **\`${l.title}\`** Requested by ${message.author.username}`);
-	logger.info(`Downloading the song ==> ${l.title} for ${message.author.username}`);
-	logger.info(`Downloaded ${l.title} successfully Enjoy!`)
+		message.channel.send(`Started to stream **\`${l.title}\`** Requested by ${message.author.username}`);
+		logger.info(`Downloading the song ==> ${l.title} for ${message.author.username}`);
+		logger.info(`Downloaded ${l.title} successfully Enjoy!`);
 	});
 	setTimeout(() => {
 		queue.delete((`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`));
@@ -109,7 +107,7 @@ function play(connection, message) {
 	});
 }
 
-//=========================Get Playlist Function==============================
+// =========================Get Playlist Function==============================
 
 function playLists(message, id) {
 	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
@@ -138,7 +136,6 @@ function playLists(message, id) {
 	logger.error(id.split('&list=')[1]);
 });
 }
-
 
 module.exports.help = {
 	name: 'play'
