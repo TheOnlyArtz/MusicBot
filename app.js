@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const config = require('./config/config.json');
 
 const client = new Discord.Client();
 const winstonLogger = require('./classes/logger.js');
@@ -13,12 +14,12 @@ global.logger = winstonClass.logger;
 
 client.commands = new Discord.Collection();
 
-client.on('ready',  () => {
+client.on('ready', async () => {
 	logger.info(`MusicBot is ready!`);
 	logger.verbose(`Connected as ${client.user.tag}`);
 	logger.verbose(`With the ID of ${client.user.id}`);
 	logger.info('======================================');
-	 getGuilds();
+	await getGuilds();
 	queue.delete('/parent');
 });
 
@@ -46,7 +47,7 @@ fs.readdir('./commands/', (err, files) => {
 });
 
 const prefix = '.';
-client.on('message',  message => {
+client.on('message', async message => {
 	if (message.content.startsWith(`${prefix}ping`)) {
 		message.channel.send('Pinging...').then(r => {
 			r.edit(`Ping! ${r.createdTimestamp - message.createdTimestamp}ms`);
@@ -94,4 +95,4 @@ function getGuilds() {
 	}
 }
 
-client.login(process.env.TOKEN);
+client.login(config.token);

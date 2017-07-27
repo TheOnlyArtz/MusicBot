@@ -1,6 +1,7 @@
 const fetch = require('snekfetch');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
+const config = require('../config/config.json');
 const fetchVideoInfo = require('youtube-info');
 const Discord = require('discord.js');
 const moment = require('moment');
@@ -12,7 +13,7 @@ const chalk = require('chalk');
 let skipper = [];
 let skipReq = 0;
 
-exports.run =  (client, message) => {
+exports.run = async (client, message) => {
 	const action = message.content.split(' ')[1];
   // Guilds = {};
 	message.delete();
@@ -26,8 +27,8 @@ exports.run =  (client, message) => {
 			return message.channel.send('Please get into a voice channel');
 		}
 		if (!toPlay.includes('&list') && !toPlay.includes('index')) {
-			fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + 'AIzaSyDCmZpeUkyhq9PYGpHaKoMNXfNxwvdTOnk')
-     .then( r => {
+			fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + config.ytKey)
+     .then(async r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
 			console.log(l);
@@ -53,7 +54,7 @@ exports.run =  (client, message) => {
 	queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
 
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then( connection => {
+		message.member.voiceChannel.join().then(async connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -65,7 +66,7 @@ exports.run =  (client, message) => {
 });
 		} else {
 			console.log('got playlist before download');
-			 playLists(message, toPlay);
+			await playLists(message, toPlay);
 			console.log('got playlist after download');
 		}
 	}
@@ -74,7 +75,7 @@ exports.run =  (client, message) => {
       skipper.push(message.author.id);
       skipReq++;
       if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-				 skip_song();
+				await skip_song();
 				message.reply('Skipped on the song successfully!')
 				logger.info(`${message.author.username} Skipped successfully on the song`)
 			} else {
@@ -92,7 +93,7 @@ function play(connection, message) {
 
 	const list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then( connection => {
+		message.member.voiceChannel.join().then(async connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -115,7 +116,7 @@ function play(connection, message) {
 }
 
 function playLists(message, id) {
-	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + 'AIzaSyDCmZpeUkyhq9PYGpHaKoMNXfNxwvdTOnk')
+	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + config.ytKey)
     .then(res => {
 	const playembed = new Discord.RichEmbed()
 			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL);
@@ -131,7 +132,7 @@ function playLists(message, id) {
 		}
 	});
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then( connection => {
+		message.member.voiceChannel.join().then(async connection => {
 			logger.info(`Started to stream by playing playlist requested by ${message.author.username}`);
 			play(connection, message);
 		});
@@ -144,7 +145,7 @@ function playLists(message, id) {
 }
 
 function skip_song() {
-	dispatcher.end();
+	dispatcher.end()
 }
 
 module.exports.help = {
