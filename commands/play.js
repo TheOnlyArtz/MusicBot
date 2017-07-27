@@ -14,12 +14,10 @@ let skipper = [];
 let skipReq = 0;
 
 exports.run = async (client, message) => {
-	const action = message.content.split(' ')[1];
   // Guilds = {};
 	message.delete();
 	//=========================Play Command==============================
-	if (action === 'play') {
-		const toPlay = message.content.split(' ').slice(2).join(' ');
+		const toPlay = message.content.split(' ').slice(1).join(' ');
 		if (!toPlay) {
 			return message.reply('Please add a link of the song to the command');
 		}
@@ -32,7 +30,6 @@ exports.run = async (client, message) => {
      .then(async r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
-			console.log(l);
 			titleForFinal.push(l.title);
 			const embed = new Discord.RichEmbed()
            .setAuthor(`Requested by ${message.author.username} and added to the queue`, l.thumbnailUrl)
@@ -71,24 +68,6 @@ exports.run = async (client, message) => {
 			await playLists(message, toPlay);
 			console.log('got playlist after download');
 		}
-	}
-	//=========================Skip Command==============================
-	if (action === 'skip') {
-    if (skipper.indexOf(message.author.id) === -1) {
-      skipper.push(message.author.id);
-      skipReq++;
-      if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-				await skip_song();
-				skipReq = 0;
-				skipper = []
-				message.reply('Skipped on the song successfully!')
-				logger.info(`${message.author.username} Skipped successfully on the song`)
-			} else {
-				message.reply(`Hey ${message.author.username}, Your skip as been added to the list\n\
-you need` + Math.ceil(((message.member.voiceChannel.members.size - 1) / 2) - skipReq) + 'Guy(s) to skip the song')
-			}
-	}
-};
 }
 
 
@@ -155,12 +134,7 @@ function playLists(message, id) {
 });
 }
 
-//=========================Song Skiiping Function==============================
-
-function skip_song() {
-	dispatcher.end()
-}
 
 module.exports.help = {
-	name: 'music'
+	name: 'play'
 };
