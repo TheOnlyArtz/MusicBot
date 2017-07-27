@@ -14,12 +14,12 @@ global.logger = winstonClass.logger;
 
 client.commands = new Discord.Collection();
 
-client.on('ready', async () => {
+client.on('ready',  () => {
 	logger.info(`MusicBot is ready!`);
 	logger.verbose(`Connected as ${client.user.tag}`);
 	logger.verbose(`With the ID of ${client.user.id}`);
 	logger.info('======================================');
-	await getGuilds();
+	 getGuilds();
 	queue.delete('/parent');
 });
 
@@ -47,7 +47,7 @@ fs.readdir('./commands/', (err, files) => {
 });
 
 const prefix = '.';
-client.on('message', async message => {
+client.on('message',  message => {
 	if (message.content.startsWith(`${prefix}ping`)) {
 		message.channel.send('Pinging...').then(r => {
 			r.edit(`Ping! ${r.createdTimestamp - message.createdTimestamp}ms`);

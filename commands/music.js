@@ -13,7 +13,7 @@ const chalk = require('chalk');
 let skipper = [];
 let skipReq = 0;
 
-exports.run = async (client, message) => {
+exports.run =  (client, message) => {
 	const action = message.content.split(' ')[1];
   // Guilds = {};
 	message.delete();
@@ -28,7 +28,7 @@ exports.run = async (client, message) => {
 		}
 		if (!toPlay.includes('&list') && !toPlay.includes('index')) {
 			fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + config.ytKey)
-     .then(async r => {
+     .then( r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
 			console.log(l);
@@ -54,7 +54,7 @@ exports.run = async (client, message) => {
 	queue.push(`/parent/${message.guild.id}/TheSongs/mySongs`, {queue: [r.body.items[0].id.videoId]}, false);
 
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -66,7 +66,7 @@ exports.run = async (client, message) => {
 });
 		} else {
 			console.log('got playlist before download');
-			await playLists(message, toPlay);
+			 playLists(message, toPlay);
 			console.log('got playlist after download');
 		}
 	}
@@ -75,7 +75,7 @@ exports.run = async (client, message) => {
       skipper.push(message.author.id);
       skipReq++;
       if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
-				await skip_song();
+				 skip_song();
 				message.reply('Skipped on the song successfully!')
 				logger.info(`${message.author.username} Skipped successfully on the song`)
 			} else {
@@ -93,7 +93,7 @@ function play(connection, message) {
 
 	const list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -132,7 +132,7 @@ function playLists(message, id) {
 		}
 	});
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			logger.info(`Started to stream by playing playlist requested by ${message.author.username}`);
 			play(connection, message);
 		});
