@@ -20,5 +20,5 @@ The bot comes up with a custom logger that I wrote can be find inside `classes/l
 __ENOJY THE BOT IS THE KEY! :D__
 # ChangeLog
 __**7/25/2017**__ - manage to get the songs playing and placed inside the queue **Per Server**.
----
+___
 __**7/26/2017**__ - Full playlist support with working skip command.
