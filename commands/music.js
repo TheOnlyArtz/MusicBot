@@ -76,6 +76,8 @@ exports.run = async (client, message) => {
       skipReq++;
       if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
 				await skip_song();
+				skipReq = 0;
+				skipper = []
 				message.reply('Skipped on the song successfully!')
 				logger.info(`${message.author.username} Skipped successfully on the song`)
 			} else {
