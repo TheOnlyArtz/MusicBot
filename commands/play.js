@@ -109,7 +109,7 @@ function play(connection, message) {
 // =========================Get Playlist Function==============================
 
 function playLists(message, id) {
-	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + process.env.YTKEY)
+	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[0] + '&key=' + process.env.YTKEY)
     .then(res => {
 	const playembed = new Discord.RichEmbed()
 			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL);
