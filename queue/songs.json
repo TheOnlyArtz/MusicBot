@@ -1,1 +1,12 @@
-{}
+{
+    "parent": {
+        "315129822571528193": {
+            "TheSongs": {
+                "mySongs": {
+                    "queue": []
+                },
+                "repeatMode": false
+            }
+        }
+    }
+}
