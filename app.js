@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const config = require('./config/config.json');
 
 const client = new Discord.Client();
 const winstonLogger = require('./classes/logger.js');
@@ -95,4 +94,4 @@ function getGuilds() {
 	}
 }
 
-client.login(config.token);
+client.login(process.env.TOKEN);
