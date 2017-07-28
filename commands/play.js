@@ -26,7 +26,7 @@ exports.run =  (client, message) => {
 		return message.channel.send('Please get into a voice channel');
 	}
 	if (!toPlay.includes('&list') && !toPlay.includes('index')) {
-		fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + 'AIzaSyDCmZpeUkyhq9PYGpHaKoMNXfNxwvdTOnk')
+		fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + process.env.YTKEY)
      .then( r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
@@ -109,7 +109,7 @@ function play(connection, message) {
 // =========================Get Playlist Function==============================
 
 function playLists(message, id) {
-	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + 'AIzaSyDCmZpeUkyhq9PYGpHaKoMNXfNxwvdTOnk')
+	fetch.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + id.split('&list=')[1] + '&key=' + process.env.YTKEY)
     .then(res => {
 	const playembed = new Discord.RichEmbed()
 			.setAuthor(`New playlist added contains ${res.body.items.length} songs in it`, message.author.displayAvatarURL);
