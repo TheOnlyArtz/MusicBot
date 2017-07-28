@@ -13,7 +13,7 @@ const chalk = require('chalk');
 const skipper = [];
 const skipReq = 0;
 
-exports.run = async (client, message) => {
+exports.run =  (client, message) => {
   // Guilds = {};
 	message.delete();
 	// =========================Play Command==============================
@@ -27,7 +27,7 @@ exports.run = async (client, message) => {
 	}
 	if (!toPlay.includes('&list') && !toPlay.includes('index')) {
 		fetch.get(`https://www.googleapis.com/youtube/v3/search?part=id&type=video&q=` + encodeURIComponent(toPlay) + '&key=' + 'AIzaSyDCmZpeUkyhq9PYGpHaKoMNXfNxwvdTOnk')
-     .then(async r => {
+     .then( r => {
 	if (r.body.items[0]) {
 		fetchVideoInfo(`${r.body.items[0].id.videoId}`).then(l => {
 			titleForFinal.push(l.title);
@@ -56,7 +56,7 @@ exports.run = async (client, message) => {
 	}
 
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			logger.info(`Started to stream ${chalk.magenta(r.body.items[0].title)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -68,7 +68,7 @@ exports.run = async (client, message) => {
 });
 	} else {
 	// =========================Plays Playlists==============================
-		await playLists(message, toPlay);
+		 playLists(message, toPlay);
 		logger.info(`Streaming a playlist for ${message.author.username}`);
 	}
 };
@@ -82,7 +82,7 @@ function play(connection, message) {
 
 	const list = queue.getData(`/parent/${message.guild.id}/TheSongs/mySongs/queue[0]`);
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			logger.info(`Started to stream ${chalk.magenta(titleForFinal)} for ${message.author.username}`);
 			play(connection, message);
 		});
@@ -125,7 +125,7 @@ function playLists(message, id) {
 		}
 	});
 	if (!message.guild.voiceConnection) {
-		message.member.voiceChannel.join().then(async connection => {
+		message.member.voiceChannel.join().then( connection => {
 			play(connection, message);
 		});
 	}

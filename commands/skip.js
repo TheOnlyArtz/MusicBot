@@ -1,4 +1,4 @@
-exports.run = async (client, message) => {
+exports.run =  (client, message) => {
 	let skipper = [];
 	let skipReq = 0;
 
@@ -10,7 +10,7 @@ exports.run = async (client, message) => {
 		}
 		if (skipReq >= Math.ceil((message.member.voiceChannel.members.size - 1) / 2)) {
 			try {
-				await skip_song();
+				 skip_song();
 				skipReq = 0;
 				skipper = [];
 				message.reply('Skipped on the song successfully!');
