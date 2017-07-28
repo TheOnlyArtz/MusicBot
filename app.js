@@ -45,7 +45,7 @@ fs.readdir('./commands/', (err, files) => {
 	});
 });
 
-const prefix = config.prefix;
+const prefix = ".";
 client.on('message',  message => {
 	if (message.content.startsWith(`${prefix}ping`)) {
 		message.channel.send('Pinging...').then(r => {
